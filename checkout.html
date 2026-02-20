@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout – ShpCart</title>
+    <meta name="description" content="Review your cart and proceed to checkout at ShpCart." />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        /* Checkout-page specific extras */
+        .cart-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5rem 2rem;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .cart-empty__icon {
+            font-size: 5rem;
+        }
+
+        .cart-empty h2 {
+            font-size: 1.5rem;
+        }
+
+        .cart-empty p {
+            color: var(--text-muted);
+            max-width: 360px;
+        }
+
+        .page-header__breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            width: 100%;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: .5rem;
+        }
+
+        .page-header__breadcrumb a {
+            color: var(--text-muted);
+        }
+
+        .page-header__breadcrumb a:hover {
+            color: var(--brand);
+        }
+
+        .page-header__breadcrumb span {
+            color: var(--text-dim);
+        }
+
+        .cart-table__amount {
+            font-weight: 700;
+        }
+
+        .guarantee-badges {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: .5rem;
+        }
+
+        .guarantee-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            background: var(--bg-card-hover);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-pill);
+            padding: 4px 10px;
+        }
+    </style>
+</head>
+
+<body data-page="checkout">
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <a href="index.html" class="navbar__brand">
+            <div class="navbar__brand-icon">🛒</div>
+            Shp<span>Cart</span>
+        </a>
+        <div class="navbar__right">
+            <a href="checkout.html" class="cart-link" aria-label="View cart">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path
+                        d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                </svg>
+                Cart
+                <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="page-header__inner">
+            <h1>Your Cart</h1>
+            <div class="page-header__breadcrumb">
+                <a href="index.html">← Continue Shopping</a>
+                <span>/</span>
+                <span>Cart</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Empty Cart State -->
+        <div id="cart-empty" class="cart-empty" style="display:none">
+            <div class="cart-empty__icon">🛒</div>
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added anything yet. Browse our products and add items to your cart.</p>
+            <a href="index.html" class="btn btn--primary btn--lg">Browse Products</a>
+        </div>
+
+        <!-- Cart Content (visible when items exist) -->
+        <div id="cart-content" class="checkout-layout" style="display:none">
+
+            <!-- Left: Cart Table -->
+            <div>
+                <div class="section-card">
+                    <div class="section-card__header">
+                        <h2>Cart Items <small id="summary-item-count"
+                                style="font-weight:400;color:var(--text-muted);font-size:.85rem;"></small></h2>
+                        <button id="clear-cart-btn" class="btn btn--danger" aria-label="Clear all items from cart">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                <path fill-rule="evenodd"
+                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1z" />
+                            </svg>
+                            Clear Cart
+                        </button>
+                    </div>
+
+                    <div class="cart-table-wrap">
+                        <table class="cart-table" aria-label="Cart items">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Product</th>
+                                    <th scope="col">Unit Price</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Total</th>
+                                    <th scope="col" aria-label="Remove"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="cart-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Order Summary -->
+            <aside>
+                <div class="section-card">
+                    <div class="summary-card">
+                        <h2>Order Summary</h2>
+
+                        <div>
+                            <div class="summary-line">
+                                <span>Subtotal</span>
+                                <span id="summary-subtotal">$0.00</span>
+                            </div>
+                            <div class="summary-line" style="margin-top:8px">
+                                <span>Shipping</span>
+                                <span id="summary-shipping">$9.99</span>
+                            </div>
+                            <p class="free-ship-note">✓ Free shipping on orders over $100</p>
+                        </div>
+
+                        <hr class="summary-divider" />
+
+                        <div class="summary-total">
+                            <span>Total</span>
+                            <span id="summary-total">$0.00</span>
+                        </div>
+
+                        <button id="checkout-btn" class="btn btn--success btn--lg"
+                            style="width:100%;justify-content:center" aria-label="Proceed to checkout">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M10.854 8.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708 0z" />
+                                <path
+                                    d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
+                            </svg>
+                            Proceed to Checkout
+                        </button>
+
+                        <div class="guarantee-badges">
+                            <div class="guarantee-badge">🔒 Secure Payment</div>
+                            <div class="guarantee-badge">↩ Easy Returns</div>
+                            <div class="guarantee-badge">📦 Fast Delivery</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Order Confirmation Modal -->
+    <div id="order-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal__box">
+            <div class="modal__header">
+                <h2 id="modal-title">
+                    <span class="success-icon">🎉</span>
+                    Order Summary
+                </h2>
+                <button class="modal__close" id="modal-close" aria-label="Close modal">✕</button>
+            </div>
+
+            <p style="color:var(--text-muted);font-size:.875rem;margin-bottom:1rem;">Please review your order before
+                confirming.</p>
+
+            <div class="modal-summary" id="modal-items"></div>
+
+            <div class="summary-line" style="margin-top:.75rem">
+                <span>Shipping</span>
+                <span id="modal-shipping"></span>
+            </div>
+            <div class="modal-total-row">
+                <span>Grand Total</span>
+                <span id="modal-total"></span>
+            </div>
+
+            <div style="display:flex;gap:12px;margin-top:1.5rem;flex-wrap:wrap">
+                <button id="modal-close" class="btn btn--outline" style="flex:1;justify-content:center"
+                    onclick="closeOrderModal()">Cancel</button>
+                <button id="modal-confirm" class="btn btn--success" style="flex:1;justify-content:center">
+                    ✓ Confirm Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2026 <a href="index.html">ShpCart</a> — Built with ❤️ using HTML, CSS &amp; JavaScript</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

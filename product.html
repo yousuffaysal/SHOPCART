@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="page-title">Product – ShpCart</title>
+    <meta name="description" id="page-desc" content="View product details at ShpCart." />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+
+    <style>
+        /* ── Product page -- specific styles ─────────────────── */
+
+        /* Page-load stagger animations */
+        @keyframes slideLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-28px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideRight {
+            from {
+                opacity: 0;
+                transform: translateX(28px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.94);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .pd-breadcrumb {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 1.4rem 2rem 0;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+            animation: fadeIn 0.5s ease both;
+        }
+
+        .pd-breadcrumb a {
+            color: var(--ink-muted);
+            transition: color var(--transition);
+        }
+
+        .pd-breadcrumb a:hover {
+            color: var(--rust);
+        }
+
+        .pd-breadcrumb__sep {
+            color: var(--ink-dim);
+        }
+
+        .pd-breadcrumb__current {
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        /* ── Main layout ──────────────────────────────────────── */
+        .pd-layout {
+            max-width: 1320px;
+            margin: 2rem auto 0;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: start;
+        }
+
+        /* ── Gallery (left) ───────────────────────────────────── */
+        .pd-gallery {
+            position: sticky;
+            top: 80px;
+            animation: slideLeft 0.65s cubic-bezier(.25, .46, .45, .94) 0.1s both;
+        }
+
+        .pd-gallery__main {
+            background: var(--cream-alt);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pd-gallery__main-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 3rem;
+            transition: transform 0.5s cubic-bezier(.25, .46, .45, .94), opacity 0.25s ease;
+        }
+
+        .pd-gallery__main-img.is-switching {
+            opacity: 0;
+            transform: scale(0.93);
+        }
+
+        /* Badge over image */
+        .pd-gallery__badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: var(--rust);
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: var(--radius-pill);
+        }
+
+        /* Zoom hint */
+        .pd-gallery__zoom {
+            position: absolute;
+            bottom: 14px;
+            right: 14px;
+            background: rgba(17, 14, 9, .6);
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.08em;
+            padding: 4px 10px;
+            border-radius: var(--radius-pill);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity var(--transition);
+            pointer-events: none;
+        }
+
+        .pd-gallery__main:hover .pd-gallery__zoom {
+            opacity: 1;
+        }
+
+        /* Lightbox zoom */
+        .pd-gallery__main:hover .pd-gallery__main-img {
+            transform: scale(1.04);
+        }
+
+        .pd-gallery__main.is-zoomed .pd-gallery__main-img {
+            transform: scale(1.55);
+            cursor: zoom-out;
+        }
+
+        .pd-gallery__thumbs {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .pd-gallery__thumb {
+            width: 76px;
+            height: 76px;
+            border-radius: 10px;
+            background: var(--cream-alt);
+            border: 2px solid var(--border);
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+            flex-shrink: 0;
+        }
+
+        .pd-gallery__thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 8px;
+        }
+
+        .pd-gallery__thumb:hover {
+            border-color: var(--ink-muted);
+            transform: translateY(-2px);
+        }
+
+        .pd-gallery__thumb.is-active {
+            border-color: var(--rust);
+            box-shadow: 0 0 0 3px rgba(196, 82, 42, .18);
+        }
+
+        /* ── Info panel (right) ───────────────────────────────── */
+        .pd-info {
+            padding: 1rem 0;
+            animation: slideRight 0.65s cubic-bezier(.25, .46, .45, .94) 0.2s both;
+        }
+
+        .pd-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--rust);
+            margin-bottom: .75rem;
+        }
+
+        .pd-category__dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--rust);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+        }
+
+        .pd-name {
+            font-family: var(--font-display);
+            font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+        }
+
+        .pd-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .pd-rating .stars {
+            font-size: 1rem;
+            color: var(--gold);
+        }
+
+        .pd-rating__score {
+            font-family: var(--font-mono);
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .pd-rating__reviews {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--ink-muted);
+            font-style: italic;
+        }
+
+        .pd-rating__divider {
+            width: 1px;
+            height: 16px;
+            background: var(--border-strong);
+        }
+
+        .pd-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            padding: 1.25rem;
+            background: var(--cream-alt);
+            border-radius: var(--radius);
+            border: 1.5px solid var(--border);
+        }
+
+        .pd-price {
+            font-family: var(--font-mono);
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--rust);
+            letter-spacing: -0.03em;
+            line-height: 1;
+        }
+
+        .pd-price-note {
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            color: var(--ink-muted);
+            font-style: italic;
+        }
+
+        .pd-free-ship {
+            margin-left: auto;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--sage);
+            background: var(--sage-pale);
+            border: 1px solid rgba(110, 126, 106, .3);
+            border-radius: var(--radius-pill);
+            padding: 4px 12px;
+            text-transform: uppercase;
+        }
+
+        .pd-desc {
+            font-size: 1.08rem;
+            color: var(--ink-muted);
+            line-height: 1.75;
+            font-style: italic;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1.5px solid var(--border);
+        }
+
+        /* Quantity + CTA */
+        .pd-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 1.75rem;
+            flex-wrap: wrap;
+        }
+
+        .pd-qty {
+            display: flex;
+            align-items: center;
+            border: 1.5px solid var(--border-strong);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            height: 50px;
+        }
+
+        .pd-qty__btn {
+            width: 44px;
+            height: 100%;
+            font-size: 1.3rem;
+            color: var(--ink-muted);
+            background: var(--cream-alt);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--transition), color var(--transition);
+            cursor: pointer;
+        }
+
+        .pd-qty__btn:hover {
+            background: var(--ink);
+            color: var(--white);
+        }
+
+        .pd-qty__val {
+            width: 52px;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--ink);
+            background: var(--white);
+            border: none;
+            outline: none;
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .pd-qty__val::-webkit-outer-spin-button,
+        .pd-qty__val::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+
+        #add-to-cart-main {
+            flex: 1;
+            min-width: 180px;
+            justify-content: center;
+            height: 50px;
+            font-size: 0.85rem;
+            border-radius: var(--radius-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #add-to-cart-main::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.15);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s ease;
+        }
+
+        #add-to-cart-main.ripple::after {
+            transform: scaleX(1);
+        }
+
+        .pd-wishlist {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border-strong);
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+
+        .pd-wishlist:hover {
+            border-color: var(--rust);
+            background: var(--rust-pale);
+        }
+
+        .pd-wishlist.is-active {
+            background: var(--rust-pale);
+            border-color: var(--rust);
+        }
+
+        /* Trust badges */
+        .pd-trust {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .pd-trust__item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: .9rem .5rem;
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: default;
+            transition: border-color var(--transition), transform var(--transition);
+        }
+
+        .pd-trust__item:hover {
+            border-color: var(--ink-muted);
+            transform: translateY(-2px);
+        }
+
+        .pd-trust__icon {
+            font-size: 1.35rem;
+        }
+
+        .pd-trust__label {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+        }
+
+        /* ── Tabs (Specs / Description) ───────────────────────── */
+        .pd-tabs {
+            border-top: 1.5px solid var(--border);
+            padding-top: 1.5rem;
+        }
+
+        .pd-tabs__nav {
+            display: flex;
+            gap: 0;
+            border-bottom: 1.5px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .pd-tabs__btn {
+            padding: 10px 20px;
+            font-family: var(--font-display);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+            border: none;
+            background: none;
+            border-bottom: 2.5px solid transparent;
+            margin-bottom: -1.5px;
+            transition: color var(--transition), border-color var(--transition);
+            cursor: pointer;
+        }
+
+        .pd-tabs__btn:hover {
+            color: var(--ink);
+        }
+
+        .pd-tabs__btn.is-active {
+            color: var(--rust);
+            border-bottom-color: var(--rust);
+        }
+
+        .pd-tab-panel {
+            display: none;
+        }
+
+        .pd-tab-panel.is-active {
+            display: block;
+            animation: fadeUp 0.3s ease both;
+        }
+
+        /* Specs table */
+        .pd-specs {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .pd-specs tr {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pd-specs tr:last-child {
+            border-bottom: none;
+        }
+
+        .pd-specs td {
+            padding: 10px 0;
+            vertical-align: top;
+            line-height: 1.5;
+        }
+
+        .pd-specs__label {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+            width: 42%;
+            padding-right: 1rem;
+        }
+
+        .pd-specs__value {
+            font-family: var(--font-body);
+            color: var(--ink);
+            font-weight: 400;
+        }
+
+        /* Long description tab */
+        .pd-long-desc {
+            font-size: 1.05rem;
+            line-height: 1.85;
+            color: var(--ink-muted);
+            font-style: italic;
+        }
+
+        .pd-long-desc strong {
+            font-style: normal;
+            color: var(--ink);
+        }
+
+        /* ── Related Products section ─────────────────────────── */
+        .pd-related {
+            max-width: 1320px;
+            margin: 5rem auto 0;
+            padding: 0 2rem 5rem;
+            animation: fadeUp 0.6s ease 0.5s both;
+        }
+
+        .pd-related__header {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1.5px solid var(--border);
+        }
+
+        .pd-related__title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .pd-related__rule {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, var(--border-strong), transparent);
+        }
+
+        .pd-related__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Stagger related cards */
+        .pd-related__grid .product-card:nth-child(1) {
+            animation-delay: 0.55s;
+        }
+
+        .pd-related__grid .product-card:nth-child(2) {
+            animation-delay: 0.62s;
+        }
+
+        .pd-related__grid .product-card:nth-child(3) {
+            animation-delay: 0.69s;
+        }
+
+        .pd-related__grid .product-card:nth-child(4) {
+            animation-delay: 0.76s;
+        }
+
+        /* ── Responsive ───────────────────────────────────────── */
+        @media (max-width: 960px) {
+            .pd-layout {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+
+            .pd-gallery {
+                position: static;
+            }
+
+            .pd-trust {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .pd-layout {
+                padding: 0 1rem;
+            }
+
+            .pd-breadcrumb {
+                padding: 1rem 1rem 0;
+            }
+
+            .pd-related {
+                padding: 0 1rem 3rem;
+            }
+
+            .pd-actions {
+                gap: 8px;
+            }
+
+            #add-to-cart-main {
+                min-width: 140px;
+            }
+
+            .pd-trust {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+
+            .pd-related__grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .pd-related__grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pd-trust {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body data-page="product">
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <a href="index.html" class="navbar__brand">
+            <div class="navbar__brand-icon">🛒</div>
+            Shp<span>Cart</span>
+        </a>
+        <div class="navbar__right">
+            <a href="checkout.html" class="cart-link" id="cart-nav-link" aria-label="View cart">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path
+                        d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                </svg>
+                Cart
+                <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <nav class="pd-breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Shop</a>
+        <span class="pd-breadcrumb__sep">/</span>
+        <span id="bc-category" class="pd-breadcrumb__sep">—</span>
+        <span class="pd-breadcrumb__sep">/</span>
+        <span id="bc-name" class="pd-breadcrumb__current">Loading…</span>
+    </nav>
+
+    <!-- Main: gallery + info -->
+    <main>
+        <div class="pd-layout">
+
+            <!-- ── Gallery ─────────────────────────────────────── -->
+            <section class="pd-gallery" aria-label="Product images">
+                <div class="pd-gallery__main" id="gallery-main" role="img" aria-label="Product image">
+                    <img id="main-img" src="" alt="" class="pd-gallery__main-img" />
+                    <span class="pd-gallery__badge" id="gallery-badge" style="display:none"></span>
+                    <span class="pd-gallery__zoom">
+                        <svg width="10" height="10" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M6.5 12.849V4.651L11 8.5l-4.5 4.349z" />
+                        </svg>
+                        click to zoom
+                    </span>
+                </div>
+                <div class="pd-gallery__thumbs" id="gallery-thumbs"></div>
+            </section>
+
+            <!-- ── Info Panel ──────────────────────────────────── -->
+            <section class="pd-info">
+
+                <!-- Category chip -->
+                <div class="pd-category">
+                    <span class="pd-category__dot"></span>
+                    <span id="info-category">—</span>
+                </div>
+
+                <h1 class="pd-name" id="info-name">Loading product…</h1>
+
+                <!-- Rating -->
+                <div class="pd-rating">
+                    <div class="stars" id="info-stars"></div>
+                    <span class="pd-rating__score" id="info-rating"></span>
+                    <div class="pd-rating__divider"></div>
+                    <span class="pd-rating__reviews" id="info-reviews"></span>
+                </div>
+
+                <!-- Price -->
+                <div class="pd-price-row">
+                    <span class="pd-price" id="info-price"></span>
+                    <span class="pd-price-note">excl. tax</span>
+                    <span class="pd-free-ship">✓ Free ship &gt;$100</span>
+                </div>
+
+                <!-- Short description -->
+                <p class="pd-desc" id="info-desc"></p>
+
+                <!-- Qty + Add to cart + Wishlist -->
+                <div class="pd-actions">
+                    <div class="pd-qty" role="group" aria-label="Quantity">
+                        <button class="pd-qty__btn" id="qty-dec" aria-label="Decrease quantity">−</button>
+                        <input class="pd-qty__val" type="number" id="qty-input" value="1" min="1" max="99"
+                            aria-label="Quantity" />
+                        <button class="pd-qty__btn" id="qty-inc" aria-label="Increase quantity">+</button>
+                    </div>
+                    <button class="btn btn--rust btn--lg" id="add-to-cart-main" aria-label="Add to cart">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor"
+                            viewBox="0 0 16 16">
+                            <path
+                                d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                        </svg>
+                        Add to Cart
+                    </button>
+                    <button class="pd-wishlist" id="wishlist-btn" aria-label="Add to wishlist"
+                        title="Add to wishlist">♡</button>
+                </div>
+
+                <!-- Trust badges -->
+                <div class="pd-trust" role="list">
+                    <div class="pd-trust__item" role="listitem">
+                        <span class="pd-trust__icon">🔒</span>
+                        <span class="pd-trust__label">Secure<br>Payment</span>
+                    </div>
+                    <div class="pd-trust__item" role="listitem">
+                        <span class="pd-trust__icon">↩</span>
+                        <span class="pd-trust__label">30-day<br>Returns</span>
+                    </div>
+                    <div class="pd-trust__item" role="listitem">
+                        <span class="pd-trust__icon">📦</span>
+                        <span class="pd-trust__label">Fast<br>Delivery</span>
+                    </div>
+                </div>
+
+                <!-- Tabs: Specs | Description -->
+                <div class="pd-tabs">
+                    <div class="pd-tabs__nav" role="tablist" aria-label="Product details">
+                        <button class="pd-tabs__btn is-active" data-tab="specs" role="tab"
+                            aria-selected="true">Specifications</button>
+                        <button class="pd-tabs__btn" data-tab="desc" role="tab" aria-selected="false">Full
+                            Description</button>
+                    </div>
+
+                    <div class="pd-tab-panel is-active" id="tab-specs" role="tabpanel">
+                        <table class="pd-specs" aria-label="Product specifications">
+                            <tbody id="specs-tbody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="pd-tab-panel" id="tab-desc" role="tabpanel">
+                        <p class="pd-long-desc" id="info-long-desc"></p>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+
+        <!-- Related Products -->
+        <section class="pd-related">
+            <div class="pd-related__header">
+                <h2 class="pd-related__title">You May Also Like</h2>
+                <div class="pd-related__rule"></div>
+                <a href="index.html" class="btn btn--outline" style="flex-shrink:0;font-size:.72rem;">View All →</a>
+            </div>
+            <div class="pd-related__grid product-grid" id="related-grid"></div>
+        </section>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2026 <a href="index.html">ShpCart</a> — Built with ❤️ using HTML, CSS &amp; JavaScript</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        // ── Product page initialisation ──────────────────────────
+        (function initProductPage() {
+            const params = new URLSearchParams(window.location.search);
+            const id = parseInt(params.get('id'), 10);
+            const product = getProductById(id);
+
+            // ── Not found ──────────────────────────────────────────
+            if (!product) {
+                document.getElementById('info-name').textContent = 'Product not found.';
+                document.getElementById('bc-name').textContent = 'Not found';
+                return;
+            }
+
+            // ── <title> & meta ─────────────────────────────────────
+            document.getElementById('page-title').textContent = product.name + ' – ShpCart';
+            document.getElementById('page-desc').content = product.description;
+
+            // ── Breadcrumb ─────────────────────────────────────────
+            document.getElementById('bc-category').textContent = product.category;
+            document.getElementById('bc-name').textContent = product.name;
+
+            // ── Gallery ────────────────────────────────────────────
+            const mainImg = document.getElementById('main-img');
+            const thumbsEl = document.getElementById('gallery-thumbs');
+            const galleryMain = document.getElementById('gallery-main');
+            const badgeEl = document.getElementById('gallery-badge');
+
+            // Badge
+            if (product.badge) {
+                badgeEl.textContent = product.badge;
+                badgeEl.style.display = '';
+            }
+
+            // Main image
+            mainImg.src = product.image;
+            mainImg.alt = product.name;
+
+            // Thumbnails – use all images; fallback to repeat of main
+            const thumbImages = (product.images && product.images.length > 1)
+                ? product.images
+                : [product.image,
+                product.image + (product.image.includes('?') ? '&' : '?') + 'sat=-30',
+                product.image + (product.image.includes('?') ? '&' : '?') + 'bri=10'];
+
+            thumbsEl.innerHTML = thumbImages.map((src, i) => `
+        <div class="pd-gallery__thumb ${i === 0 ? 'is-active' : ''}" data-src="${src}" style="animation:fadeUp .4s ease ${0.15 + i * 0.07}s both">
+          <img src="${src}" alt="${product.name} ${i + 1}" loading="lazy" />
+        </div>`).join('');
+
+            // Thumb click
+            thumbsEl.addEventListener('click', e => {
+                const thumb = e.target.closest('.pd-gallery__thumb');
+                if (!thumb) return;
+                document.querySelectorAll('.pd-gallery__thumb').forEach(t => t.classList.remove('is-active'));
+                thumb.classList.add('is-active');
+                mainImg.classList.add('is-switching');
+                setTimeout(() => {
+                    mainImg.src = thumb.dataset.src;
+                    mainImg.classList.remove('is-switching');
+                }, 220);
+            });
+
+            // Click-to-zoom on main
+            galleryMain.addEventListener('click', () => {
+                galleryMain.classList.toggle('is-zoomed');
+                galleryMain.style.cursor = galleryMain.classList.contains('is-zoomed') ? 'zoom-out' : 'zoom-in';
+            });
+
+            // ── Info panel ─────────────────────────────────────────
+            document.getElementById('info-category').textContent = product.category;
+            document.getElementById('info-name').textContent = product.name;
+
+            // Rating
+            document.getElementById('info-stars').innerHTML = renderStars(product.rating);
+            document.getElementById('info-rating').textContent = product.rating.toFixed(1);
+            document.getElementById('info-reviews').textContent =
+                product.reviews.toLocaleString() + ' reviews';
+
+            // Price
+            document.getElementById('info-price').textContent = formatCurrency(product.price);
+
+            // Descriptions
+            document.getElementById('info-desc').textContent = product.description;
+            document.getElementById('info-long-desc').innerHTML =
+                product.longDescription
+                    ? product.longDescription.replace(
+                        /^(.+?)\./,
+                        (_, first) => `<strong>${first}.</strong>`
+                    )
+                    : product.description;
+
+            // ── Specs ──────────────────────────────────────────────
+            const specsTbody = document.getElementById('specs-tbody');
+            if (product.specs && product.specs.length) {
+                specsTbody.innerHTML = product.specs.map(s => `
+          <tr>
+            <td class="pd-specs__label">${s.label}</td>
+            <td class="pd-specs__value">${s.value}</td>
+          </tr>`).join('');
+            } else {
+                specsTbody.innerHTML = '<tr><td colspan="2" style="color:var(--ink-muted);font-style:italic;padding:1rem 0">No specifications available.</td></tr>';
+            }
+
+            // ── Tabs ───────────────────────────────────────────────
+            document.querySelectorAll('.pd-tabs__btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.pd-tabs__btn').forEach(b => {
+                        b.classList.remove('is-active');
+                        b.setAttribute('aria-selected', 'false');
+                    });
+                    document.querySelectorAll('.pd-tab-panel').forEach(p => p.classList.remove('is-active'));
+                    btn.classList.add('is-active');
+                    btn.setAttribute('aria-selected', 'true');
+                    document.getElementById('tab-' + btn.dataset.tab).classList.add('is-active');
+                });
+            });
+
+            // ── Quantity controls ──────────────────────────────────
+            const qtyInput = document.getElementById('qty-input');
+            document.getElementById('qty-dec').addEventListener('click', () => {
+                const v = parseInt(qtyInput.value, 10);
+                if (v <= 1) {
+                    showToast('Minimum quantity is 1.', 'error');
+                    return;
+                }
+                qtyInput.value = v - 1;
+            });
+            document.getElementById('qty-inc').addEventListener('click', () => {
+                const v = parseInt(qtyInput.value, 10);
+                if (v >= 99) return;
+                qtyInput.value = v + 1;
+            });
+            qtyInput.addEventListener('change', () => {
+                let v = parseInt(qtyInput.value, 10);
+                if (isNaN(v) || v < 1) v = 1;
+                if (v > 99) v = 99;
+                qtyInput.value = v;
+            });
+
+            // ── Add to Cart ────────────────────────────────────────
+            const addBtn = document.getElementById('add-to-cart-main');
+            addBtn.addEventListener('click', () => {
+                const qty = parseInt(qtyInput.value, 10) || 1;
+                const result = addToCart(product.id, qty);
+                if (result.success) {
+                    showToast(`${product.name} × ${qty} added to cart! 🛒`, 'success');
+                    updateCartBadge();
+                    // Ripple + label change
+                    addBtn.classList.add('ripple');
+                    const original = addBtn.innerHTML;
+                    addBtn.innerHTML = '<span>✓ Added!</span>';
+                    setTimeout(() => {
+                        addBtn.classList.remove('ripple');
+                        addBtn.innerHTML = original;
+                    }, 1600);
+                } else {
+                    showToast(result.message, 'error');
+                }
+            });
+
+            // ── Wishlist toggle ────────────────────────────────────
+            const wishlistBtn = document.getElementById('wishlist-btn');
+            wishlistBtn.addEventListener('click', () => {
+                const isActive = wishlistBtn.classList.toggle('is-active');
+                wishlistBtn.textContent = isActive ? '♥' : '♡';
+                showToast(
+                    isActive ? 'Added to wishlist ♥' : 'Removed from wishlist',
+                    isActive ? 'success' : 'info'
+                );
+            });
+
+            // ── Related products ────────────────────────────────────
+            const related = getRelatedProducts(product.id, 4);
+            const relatedGrid = document.getElementById('related-grid');
+            if (related.length) {
+                relatedGrid.innerHTML = related.map(p => `
+          <article class="product-card" data-id="${p.id}" aria-label="${p.name}">
+            <a href="product.html?id=${p.id}" class="product-card__img-wrap" tabindex="-1" aria-hidden="true">
+              <img src="${p.image}" alt="${p.name}" class="product-card__img" loading="lazy" />
+              <span class="product-card__badge">${p.badge || p.category}</span>
+            </a>
+            <div class="product-card__body">
+              <a href="product.html?id=${p.id}" style="text-decoration:none;color:inherit">
+                <h3 class="product-card__name">${p.name}</h3>
+              </a>
+              <p class="product-card__desc">${p.description}</p>
+              <div class="product-card__meta">
+                ${renderStars(p.rating)}
+                <span class="product-card__reviews">(${p.reviews.toLocaleString()})</span>
+              </div>
+              <div class="product-card__footer">
+                <span class="product-card__price">${formatCurrency(p.price)}</span>
+                <button class="btn btn--primary add-to-cart-btn" data-id="${p.id}" aria-label="Add ${p.name} to cart">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+                  Add
+                </button>
+              </div>
+            </div>
+          </article>`).join('');
+
+                // Wire up related "Add" buttons
+                relatedGrid.addEventListener('click', e => {
+                    const btn = e.target.closest('.add-to-cart-btn');
+                    if (!btn) return;
+                    const pid = parseInt(btn.dataset.id, 10);
+                    const res = addToCart(pid, 1);
+                    if (res.success) {
+                        showToast(res.message, 'success');
+                        updateCartBadge();
+                    } else {
+                        showToast(res.message, 'error');
+                    }
+                });
+            } else {
+                relatedGrid.innerHTML = '<p style="color:var(--ink-muted);font-style:italic">No related products found.</p>';
+            }
+
+            // ── Cart badge ─────────────────────────────────────────
+            updateCartBadge();
+        })();
+    </script>
+</body>
+
+</html>
